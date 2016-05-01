@@ -1,3 +1,4 @@
+size negative score damping preference
 50 5 65 0.8 -60
 60 5 71 0.5 -60
 70 5 73 0.5 -60
