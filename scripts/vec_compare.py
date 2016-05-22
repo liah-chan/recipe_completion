@@ -12,12 +12,12 @@ from sklearn.preprocessing import StandardScaler
 from sklearn import cluster, datasets
 from sklearn.neighbors import kneighbors_graph
 
-model_folder = '../vectors/word2vec_vec_gegativeseted/'
+model_folder = '../vectors/tune_size/'
 #model_file = '../tmp/model_sg_hs_200_13_1e-4'
 n_clusters = 14
 size = 200
-def get_vec(negative,window):
-	vec_data = np.genfromtxt(model_folder+'model_'+str(negative)+'_'+str(window),
+def get_vec(parameter):
+	vec_data = np.genfromtxt(model_folder+'model_'+str(parameter)+'_10',
 	#vec_data = np.genfromtxt(model_file,
 		delimiter=' ',
     	dtype=None,
@@ -72,9 +72,9 @@ def agglomerative_cluster(size,negative,window):
 	f.close()
 	print size,negative,score,best_linkage,best_affinity,i
 
-def birch_cluster(negative,window):
+def birch_cluster(parameter):
 	score = 0
-	X = get_vec(negative=negative,window=window)
+	X = get_vec(parameter=parameter)
 	for threshold in np.arange(0.3,1.0,0.1):
 		for branching_factor in range(40,100,10):
 			birch = cluster.Birch(threshold=threshold,branching_factor=branching_factor,
@@ -89,7 +89,7 @@ def birch_cluster(negative,window):
 	# 	f.writelines("%d %d %d %f %d\n" %(size,negative,window,score,best_threshold,best_factor))
 	# 	#f.writelines(size+' '+negative+' '+score+' '+best_linkage+' '+best_affinity+' '+i+'\n')
 	# f.close()
-	print negative,window,score,best_threshold,best_factor
+	print parameter,score#,best_threshold,best_factor
 
 def dbscan_cluster(size,negative,window):
 	score = 0
@@ -198,7 +198,7 @@ def calc_score(pred):
 	 	score += B[top][bottom]['weight']
 	return (score/2)
 
-ingr_names = np.genfromtxt(model_folder+'model_15_16',delimiter=' ',
+ingr_names = np.genfromtxt(model_folder+'model_50_10',delimiter=' ',
 	dtype=None, #199 major ingredients
 	usecols=0,
 	autostrip=True,skip_header=2)
@@ -214,9 +214,9 @@ uniq = np.unique(ingr_all[:,1])
 for i in range(len(uniq)):
 	uniq[i] = str(uniq[i]).replace('/', '_')
 
-for window in range(3,17):
+for size in range(50,201,10):
 	#affinity_cluster(negative=15,window=window)
 	#agglomerative_cluster(size=size,negative=negative)
-	birch_cluster(negative=15,window=window)
+	birch_cluster(parameter=size)
 	#ms_cluster(size=size,negative=negative)
 	#kmeans_cluster(size=size,negative=negative)
