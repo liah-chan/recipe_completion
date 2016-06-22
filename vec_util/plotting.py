@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import sys
 import os
 import math
+from scipy.cluster.hierarchy import dendrogram
 
 average_similarity = 1.23594857446
 
@@ -77,6 +78,25 @@ def plot_similarity_by_category(categories,similarities):
 	plt.axhline(average_similarity,color='r')
 	plt.text(0, 1.3, 'average'+str(average_similarity))
 	plt.savefig('similarity_by_category.png')
+
+def save_dendrogram(parameter,Z,labels,n_clusters):
+	plt.figure(figsize=(20, 50))
+	plt.title('Hierarchical Clustering Dendrogram')
+	plt.ylabel('sample index')
+	plt.xlabel('distance')
+	dendrogram(
+		Z,
+		# truncate_mode='lastp',
+		# p=n_clusters,
+		labels=labels,
+		orientation='left',
+		#leaf_rotation=90.,  # rotates the x axis labels
+		leaf_font_size=8.,  # font size for the x axis labels
+	)
+	for i in np.arange(0.4,1.0,0.1):
+		plt.axvline(x=i, c='k',linestyle='dashed')
+	#plt.show()
+	plt.savefig('./Dendrogram_'+str(parameter)+'_labeled.png')
 
 def main():
 	plot_similarity_by_category()
