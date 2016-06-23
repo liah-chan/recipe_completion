@@ -28,7 +28,7 @@ The recipe vector $I_R$ is represented in one-hot encoding with shape (248,).
 As suggested, we measure the similarity of ingredients by the similarity of their context, i.e. the recipes they are in. For example, we have ingredient $i$ and ingredient $j$, the sets of recipes contains them are represented by $I$ and $J$. Hence the similarity between ingredient $i$ and ingredient $j$ is given by:
 
 \begin{equation}
-sim(i,j) = \frac{1}{n_I}\frac{1}{n_J}\sum_{I_{R_i} \in I}\sum_{ I_{R_j} \in J} <I_{R_i},I_{R_j}>
+sim(i,j) = \frac{2 \cdot \sum_{I_{R_i} \in I} \sum_{ I_{R_j} \in J} |I_{R_i} \cap I_{R_j}|}{\sum_{I_{R_i} \in I} |I_{R_i}| + \sum_{I_{R_j} \in J} |I_{R_j}|}
 \end{equation}
 
 Intuitively, it is summing up the value of pair-wise dot product of the recipe that contains ingredient $i$ and the recipe that contains ingredient $j$ between all the pairs in $I$ and $J$. Then this value is divided by the scalar product of numbers of elements in $I$ and $J$ (i.e. the number of recipes contains ingredient $i$ multiply that contains ingredient $j$).
