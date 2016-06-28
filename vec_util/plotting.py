@@ -31,36 +31,50 @@ def plot_similarity(parameters,similarities,para_name):
 
 	plt.savefig('./figure_compare_'+para_name+'.png')
 	# plt.show()
-def plot_similarity_distribution():
- 	similarity_matrix_file = os.path.realpath(os.path.join(os.getcwd(),'../data/similarity_matrix.txt'))
-	#read similarity matrix (248x248) from file
+
+def plot_similarity_distribution(similarity_matrix_file,metric,upper_lim,lower_lim,interval,max_value,min_value,avg_value):
 	similarity_matrix = np.genfromtxt(similarity_matrix_file,
 			delimiter=' ',
 			dtype=float,
 			#usecols=(0),
 			autostrip=True,skip_header=0)
-	y=[0]*60
+	n = int((upper_lim - lower_lim)/interval) 
+	# print n
+	y=[0]*n
 
-	for i in range(0,248):
-		for j in range(i+1,248):
-			similarity = int(similarity_matrix[i,j]/0.1)
-			y[similarity]+=1
-	# print y[0:-1]
+	if lower_lim < 0:
+
+		for i in range(0,248):
+			for j in range(i+1,248):
+				similarity = int(math.floor(similarity_matrix[i,j]/interval))+25 #(-25,25)
+				y[similarity]+=1
+		# print y[0:50] 
+
+	else:
+
+		for i in range(0,248):
+			for j in range(i+1,248):
+				similarity = int(math.floor(similarity_matrix[i,j]/interval))
+				y[similarity]+=1
 
 	fig = plt.figure()
 	ax = fig.add_subplot(111)
 
-	ax.bar(np.arange(0,6,0.1), y,width=0.1,color='w')
+	ax.bar(np.arange(lower_lim,upper_lim,interval), y,width=interval,color='w')
 
 	ax.set_xlabel('Similarity')
 	ax.set_ylabel('Pair Number')
-	#ax.set_title(r'$\mathrm{Histogram\ of\ IQ:}\ \mu=100,\ \sigma=15$')
-	ax.set_xlim(0,6,0.1)
+	ax.set_xlim(lower_lim,upper_lim,interval)
 	ax.set_ylim(0,2500,500)
 	ax.grid(True)
-	ax.axvline(average_similarity,color='r')
-	ax.text(1.3,2250,'average:'+str(average_similarity))
-	plt.savefig('similarity_distribution.png')
+	ax.axvline(avg_value,color='y')
+	ax.text(avg_value,250,'avg:'+str(avg_value))
+	ax.axvline(max_value,color='g')
+	ax.text(max_value,250,'max:'+str(max_value))
+	ax.axvline(min_value,color='g')
+	ax.text(min_value,250,'min:'+str(min_value))
+	# ax.text(1.3,2250,'average:'+str(average_similarity))
+	plt.savefig(metric+'_similarity_distribution.png')
 	# plt.show()
 
 def plot_similarity_by_category(categories,similarities):
@@ -99,7 +113,8 @@ def save_dendrogram(parameter,Z,labels,n_clusters):
 	plt.savefig('./Dendrogram_'+str(parameter)+'_labeled.png')
 
 def main():
-	plot_similarity_by_category()
+	# plot_similarity_by_category()
+	plot_similarity_distribution()
 
 if __name__ == "__main__":
     main()
