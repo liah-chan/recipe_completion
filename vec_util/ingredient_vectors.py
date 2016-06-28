@@ -66,71 +66,10 @@ similarity_matrix = np.genfromtxt(similarity_matrix_file,
 
 def main():
 	save_angular_similarity_matrix()
+	save_cosine_similarity_matrix()
 
 
-# def recipe_level_similarity(ingr_index_i,ingr_index_j):
-# 	"""
-# 	    compute the raw similarity between ingredients according to the recipes that contain them,
-# 	    by the formular
-# 	    .. math::
-# 	       sim(i,j) = \frac{1}{n_I}\frac{1}{n_J}\sum_{I_{R_i} \in I}\sum_{ I_{R_j} \in J} <I_{R_i},I_{R_j}>.
-
-# 	    Parameters
-# 	    ----------
-# 	    ingr_index_i : int
-# 	        the index of the first ingredient
-# 	    ingr_index_j : int
-# 	        the index of the second ingredient
-
-# 	    Returns
-# 	    -------
-# 	    r_similarity : double
-# 	        The raw similarity score between two ingredients.
-#     """
-
-# 	i_recipes_indexes = np.where(reci_ingr_matrix[:,ingr_index_i] == 1)
-# 	j_recipes_indexes = np.where(reci_ingr_matrix[:,ingr_index_j] == 1)
-# 	# print i_recipes_indexes,j_recipes_indexes
-# 	sim_sum = 0
-# 	for i in i_recipes_indexes[0]:
-# 		for j in j_recipes_indexes[0]:
-# 			recipe_i = reci_ingr_matrix[i,:]
-# 			recipe_j = reci_ingr_matrix[j,:]
-# 			#dot product calculates how mnay ingredients recipe_i and recipe_j have in common
-# 			sim_sum += np.dot(recipe_i, recipe_j.T)
-# 	r_similarity = float(sim_sum)/(len(i_recipes_indexes[0])*len(j_recipes_indexes[0]))
-# 	#recipes contain i, recipes contain j, they share (r_similarity) ingredients on average
-# 	return r_similarity
-
-# def save_recipe_dictionary():
-# 	"""
-# 		store a dictionary in file where 
-# 		the keys are indexes of recipes
-# 		and the item is the list of indexes of ingredients that the recipe contains
-# 	"""
-# 	recipe_dict = defaultdict(list)
-# 	for recipe_index in range(0,52375):
-# 		items = np.where(reci_ingr_matrix[recipe_index,:] == 1)
-# 		recipe_dict[recipe_index] = items[0]
-# 	with open(recipe_dict_file, 'wb') as handle_:
-# 		pickle.dump(recipe_dict, handle_)
-# 	handle_.close()
-
-# def save_ingredient_dictionary():
-# 	"""
-# 		store a dictionary as file where 
-# 		the keys are indexes of ingredients
-# 		and the item is the list of indexes of recipes that contain the ingredient
-# 	"""
-# 	ingredient_dict = defaultdict(list)
-# 	for ingredient_index in range(0,248):
-# 		items = np.where(reci_ingr_matrix[:,ingredient_index] == 1)
-# 		ingredient_dict[ingredient_index] = items[0]
-# 	with open(ingredient_dict_file, 'wb') as handle:
-# 		pickle.dump(ingredient_dict, handle)
-# 	handle.close()
-
-def save_normalized_similarity_matrix(similarity_matrix_file):
+def raw_similarity(ingr_index_i,ingr_index_j):
 	"""
 	    compute the raw similarity between ingredients according to the recipes that contain them,
 	    by the formular
@@ -149,6 +88,66 @@ def save_normalized_similarity_matrix(similarity_matrix_file):
 	    r_similarity : double
 	        The raw similarity score between two ingredients.
     """
+
+	i_recipes_indexes = np.where(reci_ingr_matrix[:,ingr_index_i] == 1)
+	j_recipes_indexes = np.where(reci_ingr_matrix[:,ingr_index_j] == 1)
+	# print i_recipes_indexes,j_recipes_indexes
+	sim_sum = 0
+	for i in i_recipes_indexes[0]:
+		for j in j_recipes_indexes[0]:
+			recipe_i = reci_ingr_matrix[i,:]
+			recipe_j = reci_ingr_matrix[j,:]
+			#dot product calculates how mnay ingredients recipe_i and recipe_j have in common
+			sim_sum += np.dot(recipe_i, recipe_j.T)
+	r_similarity = float(sim_sum)/(len(i_recipes_indexes[0])*len(j_recipes_indexes[0]))
+	#recipes contain i, recipes contain j, they share (r_similarity) ingredients on average
+	return r_similarity
+
+def save_raw_similarity_matrix(similarity_matrix_file):
+	"""
+		Calculate raw similarity between all ingredient pairs and save to a file
+	"""
+	n_ingredients = len(ingr_all)
+	similarity_matrix = np.zeros((248,248))
+	for index_i in range(n_ingredients-1):
+		for index_j in range(index_i+1,n_ingredients):
+			similarity_matrix[index_i,index_j] = raw_similarity(index_i,index_j)
+			similarity_matrix[index_j,index_i] = similarity_matrix[index_i,index_j]
+			print 'index_i:',index_i,'index_j:',index_j,'similarity:',similarity_matrix[index_i,index_j],similarity_matrix[index_j,index_i]
+		np.savetxt(similarity_matrix_file, similarity_matrix,fmt='%.9f')
+
+def save_recipe_dictionary():
+	"""
+		store a dictionary in file where 
+		the keys are indexes of recipes
+		and the item is the list of indexes of ingredients that the recipe contains
+	"""
+	recipe_dict = defaultdict(list)
+	for recipe_index in range(0,52375):
+		items = np.where(reci_ingr_matrix[recipe_index,:] == 1)
+		recipe_dict[recipe_index] = items[0]
+	with open(recipe_dict_file, 'wb') as handle_:
+		pickle.dump(recipe_dict, handle_)
+	handle_.close()
+
+def save_ingredient_dictionary():
+	"""
+		store a dictionary as file where 
+		the keys are indexes of ingredients
+		and the item is the list of indexes of recipes that contain the ingredient
+	"""
+	ingredient_dict = defaultdict(list)
+	for ingredient_index in range(0,248):
+		items = np.where(reci_ingr_matrix[:,ingredient_index] == 1)
+		ingredient_dict[ingredient_index] = items[0]
+	with open(ingredient_dict_file, 'wb') as handle:
+		pickle.dump(ingredient_dict, handle)
+	handle.close()
+
+def save_normalized_similarity_matrix(similarity_matrix_file):
+	"""
+		calculate and save normalized similarity scores of ingredient pairs
+	"""
 
 	n_ingredients = len(ingr_all)
 	similarity_matrix = np.zeros((248,248))
@@ -187,6 +186,26 @@ def save_normalized_similarity_matrix(similarity_matrix_file):
 	np.savetxt(similarity_matrix_file, similarity_matrix_symmetric,fmt='%.9f')
 
 def normalized_similarity_row(threadname,index_i,n_ingredients,recipe_dict,ingredient_dict):
+	"""
+		given an ingredient index number, calculate the similarity score between this ingredient
+		and ingredients with index larger than it, 
+		and store the result into queue
+
+		Parameters
+	    ----------
+	    threadname : str
+	    	name of the thread involking this function
+	    index_i : int
+	        the index of the first ingredient
+	    n_ingredients : int
+	    	total number of ingredients
+	    recipe_dict : dict
+	    	dictionary with recipe indexes as keys,
+	    	and lits of ingredients in that recipe as item
+	    ingredient_dict : dict
+	    	dictionary with ingredient indexes as keys,
+	    	and lits of recipes that contain the ingredient as item
+	"""
 	sim_row = list()
 	for index_j in range(index_i+1,n_ingredients):
 		sim = normalized_similarity(recipe_dict,ingredient_dict,index_i,index_j)
@@ -197,6 +216,31 @@ def normalized_similarity_row(threadname,index_i,n_ingredients,recipe_dict,ingre
 	# return sim_row
 
 def normalized_similarity(recipe_dict,ingredient_dict,ingr_index_i,ingr_index_j):
+	"""
+	    compute the normalized similarity between ingredients according to the recipes that contain them,
+	    by the formular
+	    .. math::
+	       sim(i,j) = \frac{2 \cdot \sum_{I_{R_i} \in I} \sum_{ I_{R_j} \in J} |I_{R_i} \cap I_{R_j}|}{\sum_{I_{R_i} \in I} |I_{R_i}|
+	        + \sum_{I_{R_j} \in J} |I_{R_j}|}.
+
+	    Parameters
+	    ----------
+	    recipe_dict : dict
+	    	dictionary with recipe indexes as keys,
+	    	and lits of ingredients in that recipe as item
+	    ingredient_dict : dict
+	    	dictionary with ingredient indexes as keys,
+	    	and lits of recipes that contain the ingredient as item
+	    ingr_index_i : int
+	        the index of the first ingredient
+	    ingr_index_j : int
+	        the index of the second ingredient
+
+	    Returns
+	    -------
+	    r_similarity : double
+	        The normalized similarity score between two ingredients.
+    """
 	i_recipes_indexes = ingredient_dict[ingr_index_i]#[0]
 	j_recipes_indexes = ingredient_dict[ingr_index_j]#[0]
 	sim_sum = 0
@@ -209,52 +253,55 @@ def normalized_similarity(recipe_dict,ingredient_dict,ingr_index_i,ingr_index_j)
 	r_similarity = float(sim_sum)/(len(i_recipes_indexes)*len(j_recipes_indexes))
 	return r_similarity
 
-# def save_raw_similarity_matrix(similarity_matrix_file):
-# 	n_ingredients = len(ingr_all)
-# 	similarity_matrix = np.zeros((248,248))
-# 	for index_i in range(n_ingredients-1):
-# 		for index_j in range(index_i+1,n_ingredients):
-# 			similarity_matrix[index_i,index_j] = recipe_level_similarity(index_i,index_j)
-# 			similarity_matrix[index_j,index_i] = similarity_matrix[index_i,index_j]
-# 			print 'index_i:',index_i,'index_j:',index_j,'similarity:',similarity_matrix[index_i,index_j],similarity_matrix[index_j,index_i]
-# 		np.savetxt(similarity_matrix_file, similarity_matrix,fmt='%.9f')
 
-# def save_cosine_similarity_matrix():
-# 	model = models.Word2Vec.load_word2vec_format(best_vector_file, binary=False)
-# 	cosine_similarity_matrix = np.zeros((248,248))
-# 	for i in range(0,248):
-# 		for j in range(i+1,248):
-# 			cosine_similarity_matrix[i,j] = model.similarity(ingr_all[i], ingr_all[j])
-# 			cosine_similarity_matrix[j,i] = cosine_similarity_matrix[i,j]
-# 		# print 'ingredient i:',ingr_all[i],'ingredient j:',ingr_all[j],'similarity:',cosine_similarity_matrix[i,j]
-# 	np.savetxt(cosine_similarity_matrix_file, cosine_similarity_matrix,fmt='%.9f')
-# 	plot_similarity_distribution(similarity_matrix_file=cosine_similarity_matrix_file,
-# 											upper_lim=1,
-# 											lower_lim=-1,
-# 											interval=0.04)
+def save_cosine_similarity_matrix():
+	model = models.Word2Vec.load_word2vec_format(best_vector_file, binary=False)
+	cosine_similarity_matrix = np.zeros((248,248))
+	for i in range(0,248):
+		for j in range(i+1,248):
+			cosine_similarity_matrix[i,j] = model.similarity(ingr_all[i], ingr_all[j])
+			cosine_similarity_matrix[j,i] = cosine_similarity_matrix[i,j]
+		# print 'ingredient i:',ingr_all[i],'ingredient j:',ingr_all[j],'similarity:',cosine_similarity_matrix[i,j]
+	np.savetxt(cosine_similarity_matrix_file, cosine_similarity_matrix,fmt='%.9f')
 
-# #only for the distribution, the index of ingredients are different from others
-# def save_angular_similarity_matrix(): 
-# 	vec_data,ingr_names = get_vec_from_model(best_vector_file, 10)
-# 	angular_similarity_matrix = cosine_similarity(vec_data)
-# 	angular_similarity_matrix_bounded = 1 - np.arccos(angular_similarity_matrix)/np.pi
-# 	angular_similarity_matrix_bounded[np.isnan(angular_similarity_matrix_bounded)] = 1
+	mask = np.ones(cosine_similarity_matrix.shape, dtype=bool)
+	np.fill_diagonal(mask, 0)
+	max_value = cosine_similarity_matrix[mask].max()
+	min_value = cosine_similarity_matrix[mask].min()
+	avg_value = np.average(cosine_similarity_matrix[mask])
+
+	plot_similarity_distribution(similarity_matrix_file=cosine_similarity_matrix_file,
+											metric='cosine',
+											upper_lim=1,
+											lower_lim=-1,
+											interval=0.04,
+											max_value=max_value,
+											min_value=min_value,
+											avg_value=avg_value)
+
+#only for the distribution, the index of ingredients are different from others
+def save_angular_similarity_matrix(): 
+	vec_data,ingr_names = get_vec_from_model(best_vector_file, 10)
+	angular_similarity_matrix = cosine_similarity(vec_data)
+	angular_similarity_matrix_bounded = 1 - np.arccos(angular_similarity_matrix)/np.pi
+	angular_similarity_matrix_bounded[np.isnan(angular_similarity_matrix_bounded)] = 1
 	
-# 	np.savetxt(angular_similarity_matrix_file, angular_similarity_matrix_bounded,fmt='%.9f')
+	np.savetxt(angular_similarity_matrix_file, angular_similarity_matrix_bounded,fmt='%.9f')
 
-# 	mask = np.ones(angular_similarity_matrix_bounded.shape, dtype=bool)
-# 	np.fill_diagonal(mask, 0)
-# 	max_value = angular_similarity_matrix_bounded[mask].max()
-# 	min_value = angular_similarity_matrix_bounded.min()
-# 	avg_value = np.average(angular_similarity_matrix_bounded)
-# 	# print max_value,min_value,avg_value
-# 	plot_similarity_distribution(similarity_matrix_file=angular_similarity_matrix_file,
-# 											upper_lim=1,
-# 											lower_lim=0,
-# 											interval=0.02,
-# 											max_value=max_value,
-# 											min_value=min_value,
-# 											avg_value=avg_value)
+	mask = np.ones(angular_similarity_matrix_bounded.shape, dtype=bool)
+	np.fill_diagonal(mask, 0)
+	max_value = angular_similarity_matrix_bounded[mask].max()
+	min_value = angular_similarity_matrix_bounded[mask].min()
+	avg_value = np.average(angular_similarity_matrix_bounded[mask])
+	# print max_value,min_value,avg_value
+	plot_similarity_distribution(similarity_matrix_file=angular_similarity_matrix_file,
+											metric='angular',
+											upper_lim=1,
+											lower_lim=0,
+											interval=0.02,
+											max_value=max_value,
+											min_value=min_value,
+											avg_value=avg_value)
 
 def avg_similarity_all():
 	"""
