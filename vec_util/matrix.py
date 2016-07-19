@@ -19,8 +19,9 @@ co_occur_matrix_file = os.path.realpath(os.path.join(os.getcwd(),'../data/co_occ
 common_ingr_matrix_file = os.path.realpath(os.path.join(os.getcwd(),'../data/common_ingr_matrix.txt'))
 
 def main():
-	pass
-	#matrix_gen()	
+	ingredient_file = os.path.realpath(os.path.join(os.getcwd(),'../data/ingredients_major.txt'))
+	recipe_file = os.path.realpath(os.path.join(os.getcwd(),'../data/recipes_major.txt'))
+	cooccurance_gen(ingredient_file,recipe_file)
 	#print calculate_jaccard(24, 262)
 
 '''
