@@ -45,21 +45,8 @@ ingr_all,cate_all = np.genfromtxt(ingredient_file, #248 major ingredients
 		skip_header=0,
 		unpack=True)
 
-#read similarity matrix (248x248) from file
-# similarity_matrix = np.genfromtxt(similarity_matrix_file,   ######
-# 		delimiter=' ',
-# 		dtype=float,
-# 		#usecols=(0),
-# 		autostrip=True,skip_header=0)
-
 def main():
 	find_best_vec()
-	# vector_file = os.path.realpath(os.path.join(os.getcwd(),'../tune_size/new/model_10'))
-	# save_euclidean_similarity_matrix(vector_file, size=10, skip_header=0)
-
-	# plot_normalized_similarity(normalized_similarity_matrix_file)
-	# agv_similarity_by_category(raw_similarity_matrix_file)
-
 
 def get_reci_ingr_matrix():
 	if not os.path.isfile(reci_ingr_matrix_file):  ######
@@ -180,9 +167,7 @@ def plot_normalized_similarity(similarity_matrix_file):
 										interval=0.01, 
 										max_value=max_value, 
 										min_value=min_value, 
-										avg_value=avg_value)
-	
-	
+										avg_value=avg_value)	
 
 def save_normalized_similarity_matrix(similarity_matrix_file):
 	"""
@@ -292,56 +277,6 @@ def normalized_similarity(recipe_dict,ingredient_dict,ingr_index_i,ingr_index_j)
 			sim_sum += sim
 	r_similarity = float(sim_sum)/(len(i_recipes_indexes)*len(j_recipes_indexes))
 	return r_similarity
-
-# def save_recipe_similarity():
-# 	with open(recipe_dict_file, 'rb') as handle:
-# 		recipe_dict = pickle.load(handle)
-# 	handle.close()
-# 	# for key in recipe_dict.keys():
-# 	# matrix = np.zeros((52375,52375),dtype=int)
-# 	similarity_list = list()
-# 	length = len(recipe_dict.keys()) #52375
-# 	# for i in range(length-1):
-# 	for i in range(0,1):
-# 		for j in range(i+1,length):
-# 			# print  set(recipe_dict[i][0]) & set(recipe_dict[j][0])
-# 			sim = round(len(set(recipe_dict[i]) & set(recipe_dict[j]))/float(len(recipe_dict[i])+len(recipe_dict[j])),3)
-# 			similarity_list.append(sim)
-# 			# matrix[j,i] = matrix[i,j]
-# 			# print matrix[i,j]
-# 			# print sim
-# 			# break
-# 		# break
-# 	with open(recipe_similarity_file, 'wb') as handle_:
-# 		pickle.dump(similarity_list, handle_)
-# 	handle_.close()
-# 	# matrix_symmetric = matrix + matrix.T
-# 	# np.savetxt(recipe_similarity_matrix_file, matrix, fmt='%d')	
-
-# def save_cosine_similarity_matrix():
-# 	model = models.Word2Vec.load_word2vec_format(best_vector_file, binary=False)
-# 	cosine_similarity_matrix = np.zeros((248,248))
-# 	for i in range(0,248):
-# 		for j in range(i+1,248):
-# 			cosine_similarity_matrix[i,j] = model.similarity(ingr_all[i], ingr_all[j])
-# 			cosine_similarity_matrix[j,i] = cosine_similarity_matrix[i,j]
-# 		# print 'ingredient i:',ingr_all[i],'ingredient j:',ingr_all[j],'similarity:',cosine_similarity_matrix[i,j]
-# 	np.savetxt(cosine_similarity_matrix_file, cosine_similarity_matrix,fmt='%.9f')
-
-# 	mask = np.ones(cosine_similarity_matrix.shape, dtype=bool)
-# 	np.fill_diagonal(mask, 0)
-# 	max_value = cosine_similarity_matrix[mask].max()
-# 	min_value = cosine_similarity_matrix[mask].min()
-# 	avg_value = np.average(cosine_similarity_matrix[mask])
-
-# 	plot_similarity_distribution(similarity_matrix_file=cosine_similarity_matrix_file,
-# 											metric='cosine',
-# 											upper_lim=1,
-# 											lower_lim=-1,
-# 											interval=0.04,
-# 											max_value=max_value,
-# 											min_value=min_value,
-# 											avg_value=avg_value)
 
 def find_best_vec():
 	"""
