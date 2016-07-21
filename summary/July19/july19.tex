@@ -37,7 +37,7 @@
 For the sake of comparing this similarity measure to other common similarity metrics, it is useful to normalize the result to obtain a metric bounded in [0,1]. The normalized similarity measure is given by formula
 
 \begin{equation}
-sim(i,j) = \frac{2 \cdot \sum_{I_{R_i} \in I} \sum_{ I_{R_j} \in J} |I_{R_i} \cap I_{R_j}|}{\sum_{I_{R_i} \in I} |I_{R_i}| + \sum_{I_{R_j} \in J} |I_{R_j}|}
+sim(i,j) = \frac{\sum_{I_{R_i} \in I} \sum_{ I_{R_j} \in J} \frac{2 \cdot |I_{R_i} \cap I_{R_j}|}{|I_{R_i}| + |I_{R_j}|}}{|I| \cdot |J|}
 \end{equation}
 
 If results are plotted, as we can see in the graph below, is very condensed within the range [0,0.5]. The next graph shows a plotting within range [0,0.5].
