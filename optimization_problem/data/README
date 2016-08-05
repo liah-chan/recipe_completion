@@ -1,0 +1,9 @@
+Here you have to create the profits datasets using the profits.py script.
+The combinations I would like you to try are:
+ - contexts + cooccurs
+ - vec_contexts + cooccurs
+ - contexts only
+ - vec_contexts only
+
+Use the ingredient vectors that you think behaved the best on the basis of the 
+experiments you made so far.

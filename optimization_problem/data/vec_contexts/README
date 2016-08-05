@@ -1,0 +1,4 @@
+Put here the context scores that you computed as similarity between ingredient
+vectors, in the same format as contexts/contexts.csv:
+
+ing1,ing2,score

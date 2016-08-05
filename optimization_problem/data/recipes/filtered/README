@@ -1,0 +1,6 @@
+The recipes are filtered by removing all the recipes that contain less than 3 
+ingredients. Then we also remove the recipes that contain ingredients with 
+ frequecy less or equal to 75. The resulting number of recipes is 52375, 
+ covering about the 95% of the original dataset. The number of ingredients that
+ are filtered in this way is 248.
+

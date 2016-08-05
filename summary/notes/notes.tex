@@ -1,0 +1,15 @@
+\documentclass{article}
+
+\usepackage{amsmath}
+\usepackage{amsfonts}
+
+\begin{document}
+
+\begin{eqnarray}
+    \text{profit}(T, i) &=& \frac{\sum_{j \in T \setminus \{ i \}} \text{cooccur}(i, j)}{|T \setminus \{ i \}|} - \frac{\sum_{j, k \in T} \text{cooccur}(j, k)}{\binom{|T|}{2}} + \\
+                         && \frac{\max_{j \in T} \text{context}(i, j) + \min_{j \in T} \text{context}(i, j)}{2}
+\end{eqnarray}
+
+where $\text{cooccur}(i, j)$ is equal to the $\text{npmi}_{0-1}(i, j)$.
+
+\end{document}

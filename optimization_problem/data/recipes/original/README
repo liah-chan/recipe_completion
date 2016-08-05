@@ -1,0 +1,8 @@
+This folder contains the original data.
+
+ingredients_all.csv: all the ingredients, including those not present in the 
+                     original recipe dataset
+ingredients.csv: all the ingredients that are present in the original recipe 
+                 dataset                     
+recipes.csv: all the recipes in the original dataset
+
