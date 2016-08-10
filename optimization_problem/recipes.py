@@ -5,6 +5,7 @@ Set of APIs to interact with the recipes data.
 import logging
 import pymzn
 import csv
+from random import randint
 
 data_dir = 'data/'
 dzn_dir = 'dzn/'
@@ -48,6 +49,9 @@ class Recipes(object):
                 self.ingtypes[ingidx] = ingtype
                 self.ing2ingidx[ing] = ingidx
                 self.ingidx2ing[ingidx] = ing
+
+    # def get_ingredients():
+    #     return self.ingidxs
     
     def _load_recipes(self, recipes_csv):
         self.log.debug('Loading recipes from: {}'.format(recipes_csv))
@@ -56,10 +60,10 @@ class Recipes(object):
         self.recid2recidx = {}      # Map from recipe ids to indices
         self.recidx2recid = {}      # Map from recipe indices to ids
         with open(recipes_csv) as f:
-            for i, row in enumerate(csv.reader(f)):
+            for i, row in enumerate(csv.reader(f)): #(0,firstrow) (1,secondrow)
                 recid = int(row[0])
                 recidx = i + 1
-                rectype = row[1]
+                rectype = row[1] #geo location
                 recingidxs = [self.ing2ingidx[ing] for ing in row[2:]]
                 self.recs[recidx] = set(recingidxs)
                 self.rectypes[recidx] = rectype
@@ -94,6 +98,22 @@ class Recipes(object):
 
     def _is_none(self, ingidx):
         return ingidx > len(self.ings)
+
+    def rand_remove(self,recidx,rm_idx):
+        recipe_id = self.recidx2recid[recidx]
+        reclength = len(self.recs[recidx])
+        # rm_idx = randint(1, reclength)
+        removed_ingredient = self.ingidx2ing[ list(self.recs[recidx])[rm_idx-1] ]
+        return recipe_id,reclength,removed_ingredient
+
+    def rand_idx(self,recidx):
+        recipe_id = self.recidx2recid[recidx]
+        reclength = len(self.recs[recidx])
+        # print('recipe id: ' +str(recipe_id))
+        # print('recipe length: '+str(reclength))
+        rm_idx = randint(1, reclength)
+        # removed_ingredient = self.ingidx2ing[ list(self.recs[recidx])[rm_idx-1] ]
+        return rm_idx
 
     def rank(self, recipe_id, removed_ingredient):
         tmplidx = self.recid2recidx[recipe_id]
