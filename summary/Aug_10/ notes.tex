@@ -1,0 +1,92 @@
+\documentclass[12pt]{report}
+
+\usepackage{float}
+\usepackage{times}
+\usepackage{url}
+\usepackage{latexsym}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{sidecap}
+\usepackage{geometry}
+\usepackage{marginnote}
+\usepackage{mdframed}
+\usepackage{multicol}
+\setlength{\columnsep}{1cm}
+
+ \geometry{
+ a4paper,
+ total={170mm,257mm},
+ left=10mm,
+ right=20mm,
+ top=10mm,
+ bottom=15mm
+ }
+
+\begin{document}
+
+\iffalse
+\begin{titlepage}
+   \vspace*{\stretch{1.0}}
+   \begin{center}
+      \Large\textbf{Weekly Report}\\
+      \large\textit{Lingzhen Chen}
+   \end{center}
+   \vspace*{\stretch{2.0}}
+\end{titlepage}
+\fi
+
+\begin{multicols}{2}
+[\section*{Update 8.10}
+]
+
+The test dataset contain 5,500 recipes (10\% of the filtered recipe data). And the models configuration are shown below:
+
+\begin{center}
+\begin{tabular}{|l|l|}
+\hline
+Experiment No. & Configuration Settings \\ \hline
+1 & contexts with co-occurrence  \\ \hline
+2 & contexts only      \\ \hline
+3 & vector contexts with co-occurrence     \\ \hline
+4 & vector contexts only      \\ \hline
+\end{tabular}
+\end{center}
+
+And for each experiment, we calculate the following 5 performance metrics:
+
+1) Mean position of the eliminated ingredient in the ordered list of suggested ingredients.
+
+2) Median position of the eliminated ingredient in the ordered list of suggested ingredients:
+
+3) Percentage of test recipes for which the eliminated ingredient is located in the top 10 of suggested ingredients.
+
+4) Percentage of the eliminated ingredient being predicted at the first rank.
+
+5) The mean AUC. The AUC is defined as the area under the ROC curve. Since there is only one positive observation, the AUC is directly related to the rank of the eliminated ingredient and can be computed as:
+
+
+\begin{equation}
+AUC = 1-(\frac{rank-1}{N^-}) = \frac{N^-+1-rank}{N^-}
+\end{equation}
+
+with $N^-$ the number of negative observations and rank the position of the eliminated ingredient in the ordered list of suggested ingredients.
+
+And the result of experiment are shown below:
+
+ 
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+Experiment No. & 1 & 2 & 3 & 4 \\ \hline
+Mean Rank & \textbf{24.6} & 39.6 & 32.7 & 62.2 \\ \hline
+Median Rank & \textbf{10.0} & 21.0 & 17.0 & 50.0 \\ \hline
+Rank$<=$10(\%) & \textbf{51.9\%} & 33.0\% & 40.0\% & 10.0\% \\ \hline
+Rank 1(\%) & \textbf{9.7\%}  & 3.4\% & 6.3\% & 1.0\% \\ \hline
+Mean AUC & \textbf{0.904} & 0.844 & 0.872 & 0.752 \\ \hline
+
+\end{tabular}
+
+
+From the result, it is clear that the best performance is when using the contexts with co-occurrence information. And in general, incorporating co-occurrence information improves the performance no matter which contexts file that we are using. 
+
+\end{multicols}
+\end{document}
